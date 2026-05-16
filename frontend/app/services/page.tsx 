@@ -1,0 +1,64 @@
+// app/services/page.tsx — Services List Page
+
+'use client';
+
+import { useState } from 'react';
+import { useServices } from '@/hooks/useServices';
+import ServiceGrid from '@/components/services/ServiceGrid';
+import { TCategory } from '@/types';
+
+const CATEGORIES: TCategory[] = [
+  'AC Repair', 'AC Gas Refill', 'AC Installation',
+  'Refrigerator Repair', 'Freezer Repair', 'Home Appliance',
+];
+
+export default function ServicesPage() {
+  const { services, isLoading, error } = useServices();
+  const [activeCategory, setActiveCategory] = useState<TCategory | 'All'>('All');
+
+  const filtered =
+    activeCategory === 'All'
+      ? services
+      : services.filter((s) => s.category === activeCategory);
+
+  return (
+    <div className="max-w-7xl mx-auto section-padding">
+      {/* Header */}
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Our Services</h1>
+        <p className="text-gray-500 max-w-xl mx-auto">
+          Professional AC & Refrigerator services by certified technicians.
+        </p>
+      </div>
+
+      {/* Category Filter */}
+      <div className="flex flex-wrap gap-2 justify-center mb-10">
+        <button
+          onClick={() => setActiveCategory('All')}
+          className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+            activeCategory === 'All'
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          All
+        </button>
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              activeCategory === cat
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <ServiceGrid services={filtered} isLoading={isLoading} error={error} />
+    </div>
+  );
+}
