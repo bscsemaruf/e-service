@@ -58,6 +58,7 @@ export default function ServiceDetailsPage({
               src={service.image}
               alt={service.title}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 100vw"
               className="object-cover"
             />
           ) : (

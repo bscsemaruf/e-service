@@ -1,13 +1,6 @@
-// services/auth.service.ts
-// =========================================================
-// কেন? Auth API calls এক জায়গায়।
-// Login, profile, logout logic এখানে।
-// =========================================================
-
 import axiosInstance from "./axios";
 import { IApiResponse, IAuthResponse, ILoginPayload, IAdmin } from "@/types";
 
-// সব API response এর type safe access
 const login = async (payload: ILoginPayload): Promise<IAuthResponse> => {
   const { data } = await axiosInstance.post<IApiResponse<IAuthResponse>>(
     "/auth/login",
@@ -22,15 +15,26 @@ const getProfile = async (): Promise<IAdmin> => {
   return data.data;
 };
 
-// LocalStorage helper functions
+// ── LocalStorage + Cookie helper ────────────────────────
+// Cookie: middleware পড়তে পারে (server-side)
+// localStorage: client-side এ token access করতে পারে
+
 const saveAuthData = (token: string, admin: IAdmin): void => {
+  // localStorage এ save করো
   localStorage.setItem("ac_admin_token", token);
   localStorage.setItem("ac_admin_user", JSON.stringify(admin));
+
+  // Cookie তেও save করো — middleware এর জন্য
+  document.cookie = `ac_admin_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
 };
 
 const clearAuthData = (): void => {
+  // localStorage clear করো
   localStorage.removeItem("ac_admin_token");
   localStorage.removeItem("ac_admin_user");
+
+  // Cookie delete করো
+  document.cookie = "ac_admin_token=; path=/; max-age=0";
 };
 
 const getStoredToken = (): string | null => {

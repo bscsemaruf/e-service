@@ -54,6 +54,12 @@ export default function Navbar() {
             <Link href="/contact" className="btn-primary text-sm py-2 px-5">
               Book Service
             </Link>
+            <Link
+              href="/admin/dashboard"
+              className="flex items-center gap-2 font-bold text-x "
+            >
+              <span>Admin</span>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -93,6 +99,12 @@ export default function Navbar() {
               className="btn-primary text-sm text-center"
             >
               Book Service
+            </Link>
+            <Link
+              href="/admin/dashboard"
+              className="flex items-center gap-2 font-bold text-x "
+            >
+              <span>Admin</span>
             </Link>
           </div>
         )}
