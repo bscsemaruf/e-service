@@ -136,7 +136,7 @@ import { CheckCircle, Phone, Clock, Shield } from "lucide-react";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 
 // ✅ Local Images
-import hero1 from "@/public/images/ac5.avif";
+import hero1 from "@/public/images/a5.jpg";
 import hero2 from "@/public/images/ac6.jpg";
 import hero3 from "@/public/images/ac7.jpg";
 
