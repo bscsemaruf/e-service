@@ -22,17 +22,17 @@
     "mongoose": "^9.6.2",
     "multer": "^2.1.1",
     "slugify": "^1.6.9",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
+    "zod": "^4.4.3",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.1.0",
     "@types/node": "^25.8.0",
-    "nodemon": "^3.1.14",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
