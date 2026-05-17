@@ -1,27 +1,31 @@
 // src/app.ts
-// =========================================================
-// কেন? Express app configuration আলাদা file এ রাখো।
-// server.ts শুধু listen করবে, app.ts সব middleware setup করবে।
-// এটা testing এ সুবিধা দেয়।
-// =========================================================
 
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 
-// Routes
 import authRoutes from "./modules/auth/auth.route";
 import serviceRoutes from "./modules/service/service.route";
 import contactRoutes from "./modules/contact/contact.route";
-
-// Middleware
 import errorMiddleware from "./middleware/error.middleware";
 
 const app: Application = express();
 
-// ── Global Middleware ────────────────────────────────────
+// ── CORS ─────────────────────────────────────────────────
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://e-service-orcin.vercel.app",
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+      // origin না থাকলে (Postman/server-to-server) allow করো
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked: ${origin}`));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -53,7 +57,7 @@ app.use((_req: Request, res: Response) => {
   });
 });
 
-// ── Global Error Handler (সবার শেষে) ────────────────────
+// ── Global Error Handler ──────────────────────────────────
 app.use(errorMiddleware);
 
 export default app;
