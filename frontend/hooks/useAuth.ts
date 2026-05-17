@@ -143,7 +143,7 @@ export const useAuth = () => {
         setIsMounted(true);
 
         toast.success(`Welcome back, ${adminData.name}!`);
-        router.replace("/admin/dashboard");
+        router.push("/admin/dashboard");
       } catch (err: unknown) {
         const axiosError = err as {
           response?: { data?: { message?: string } };

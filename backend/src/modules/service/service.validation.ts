@@ -14,15 +14,9 @@ const CATEGORIES = [
 // CREATE SERVICE SCHEMA
 // ─────────────────────────────
 export const createServiceSchema = z.object({
-  title: z
-    .string()
-    .min(3, "Title must be at least 3 characters")
-    .max(100, "Title cannot exceed 100 characters"),
+  title: z.string().max(100, "Title cannot exceed 100 characters"),
 
-  description: z
-    .string()
-    .min(10, "Description must be at least 10 characters")
-    .max(1000, "Too long"),
+  description: z.string().max(1000, "Too long"),
 
   price: z
     .string()
