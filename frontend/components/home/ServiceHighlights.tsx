@@ -36,7 +36,7 @@ export default function ServiceHighlights() {
           <LoadingSpinner />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.slice(0, 3).map((s) => (
+            {services.slice(0, 6).map((s) => (
               <ServiceCard key={s._id} service={s} />
             ))}
           </div>

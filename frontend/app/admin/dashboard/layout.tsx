@@ -542,8 +542,10 @@ export default function DashboardLayout({
           </button>
 
           <div className="flex items-center gap-2 font-bold text-gray-900">
-            <Wind className="w-5 h-5 text-blue-600" />
-            <span>CoolFix</span>
+            <Link href={"/"}>
+              <Wind className="w-5 h-5 text-blue-600" />
+              <span>CoolFix</span>
+            </Link>
           </div>
 
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">

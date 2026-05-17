@@ -102,7 +102,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/admin/dashboard"
-              className="flex items-center gap-2 font-bold text-x "
+              className="flex items-center gap-2 font-bold text-sm "
             >
               <span>Admin</span>
             </Link>
