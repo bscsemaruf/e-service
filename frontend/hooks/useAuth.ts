@@ -1,42 +1,53 @@
 // "use client";
 
-// import { useState, useCallback, useEffect } from "react";
+// import { useState, useCallback } from "react";
 // import { useRouter } from "next/navigation";
 // import toast from "react-hot-toast";
 // import { AuthApiService } from "@/services/auth.service";
 // import { IAdmin, ILoginPayload } from "@/types";
-
-// // ✅ State একটাই object এ রাখো — multiple setState এড়াতে
-// interface AuthState {
-//   admin: IAdmin | null;
-//   isAuthenticated: boolean;
-//   isMounted: boolean;
-// }
+// import { useEffect } from "react";
 
 // export const useAuth = () => {
 //   const router = useRouter();
 //   const [isLoading, setIsLoading] = useState(false);
 
-//   // ✅ একটা state object এ সব রাখো
-//   // এক setState call এ সব update হবে — cascading render নেই
-//   const [authState, setAuthState] = useState<AuthState>({
-//     admin: null,
-//     isAuthenticated: false,
-//     isMounted: false,
+//   // ✅ useState initializer function — useEffect দরকার নেই
+//   // শুধু client side এ একবার চলে, SSR এ চলে না
+//   const [admin, setAdmin] = useState<IAdmin | null>(() => {
+//     if (typeof window === "undefined") return null;
+//     return AuthApiService.getStoredAdmin();
 //   });
 
-//   // ✅ Client mount হলে একবার setState — cascading নেই
-//   useEffect(() => {
-//     const storedAdmin = AuthApiService.getStoredAdmin();
-//     const storedToken = AuthApiService.getStoredToken();
+//   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+//     if (typeof window === "undefined") return false;
+//     return !!(
+//       AuthApiService.getStoredToken() && AuthApiService.getStoredAdmin()
+//     );
+//   });
 
-//     // একটা setState call এ সব update করো
-//     setAuthState({
-//       admin: storedAdmin ?? null,
-//       isAuthenticated: !!(storedAdmin && storedToken),
-//       isMounted: true,
-//     });
-//   }, []); // শুধু mount এ একবার চলবে
+//   useEffect(() => {
+//     const verifyAuth = async () => {
+//       try {
+//         const adminData = await AuthApiService.getProfile();
+
+//         setAdmin(adminData);
+//         setIsAuthenticated(true);
+//       } catch {
+//         AuthApiService.clearAuthData();
+
+//         setAdmin(null);
+//         setIsAuthenticated(false);
+//       }
+//     };
+
+//     verifyAuth();
+//   }, []);
+
+//   // ✅ isMounted এর বদলে suppressHydrationWarning ব্যবহার করবো
+//   // layout.tsx এ দেখাবো
+//   const [isMounted, setIsMounted] = useState<boolean>(() => {
+//     return typeof window !== "undefined";
+//   });
 
 //   // LOGIN
 //   const login = useCallback(
@@ -45,18 +56,14 @@
 //       try {
 //         const { token, admin: adminData } = await AuthApiService.login(payload);
 
-//         // localStorage + Cookie তে save করো
 //         AuthApiService.saveAuthData(token, adminData);
 
-//         // একটা setState call এ সব update
-//         setAuthState({
-//           admin: adminData,
-//           isAuthenticated: true,
-//           isMounted: true,
-//         });
+//         setAdmin(adminData);
+//         setIsAuthenticated(true);
+//         setIsMounted(true);
 
 //         toast.success(`Welcome back, ${adminData.name}!`);
-//         router.replace("/admin/dashboard");
+//         router.push("/admin/dashboard");
 //       } catch (err: unknown) {
 //         const axiosError = err as {
 //           response?: { data?: { message?: string } };
@@ -75,22 +82,16 @@
 //   // LOGOUT
 //   const logout = useCallback(() => {
 //     AuthApiService.clearAuthData();
-
-//     // একটা setState call এ সব reset
-//     setAuthState({
-//       admin: null,
-//       isAuthenticated: false,
-//       isMounted: true,
-//     });
-
+//     setAdmin(null);
+//     setIsAuthenticated(false);
 //     toast.success("Logged out successfully");
 //     router.push("/admin/login");
 //   }, [router]);
 
 //   return {
-//     admin: authState.admin,
-//     isAuthenticated: authState.isAuthenticated,
-//     isMounted: authState.isMounted,
+//     admin,
+//     isAuthenticated,
+//     isMounted,
 //     isLoading,
 //     login,
 //     logout,
@@ -99,7 +100,7 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { AuthApiService } from "@/services/auth.service";
@@ -109,8 +110,9 @@ export const useAuth = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ useState initializer function — useEffect দরকার নেই
-  // শুধু client side এ একবার চলে, SSR এ চলে না
+  // ✅ localStorage থেকে initial state নাও
+  // useEffect বা verifyAuth() দরকার নেই
+  // verifyAuth ছিল বলেই বারবার API call হচ্ছিল
   const [admin, setAdmin] = useState<IAdmin | null>(() => {
     if (typeof window === "undefined") return null;
     return AuthApiService.getStoredAdmin();
@@ -123,9 +125,7 @@ export const useAuth = () => {
     );
   });
 
-  // ✅ isMounted এর বদলে suppressHydrationWarning ব্যবহার করবো
-  // layout.tsx এ দেখাবো
-  const [isMounted, setIsMounted] = useState<boolean>(() => {
+  const [isMounted] = useState<boolean>(() => {
     return typeof window !== "undefined";
   });
 
@@ -140,7 +140,6 @@ export const useAuth = () => {
 
         setAdmin(adminData);
         setIsAuthenticated(true);
-        setIsMounted(true);
 
         toast.success(`Welcome back, ${adminData.name}!`);
         router.push("/admin/dashboard");
